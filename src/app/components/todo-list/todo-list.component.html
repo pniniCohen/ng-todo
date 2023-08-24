@@ -1,9 +1,11 @@
 <div class="todo-list">
-    <div class="item-warp" *ngFor="let item of todos">
-    <mat-card>
-        <mat-card-title>{{item.title}}</mat-card-title>
-        <mat-card-subtitle>{{item.descreption}}</mat-card-subtitle>
-    </mat-card>
+    <div class="item-warp" *ngFor="let item of todos; let i = index">
+        <!-- <div [ngStyle]="{'color':item.selected?'green':'black'}"> -->
+        <mat-card (click)="onTodoClick(item,i)" [ngClass]="{selected:item.selected,complite:item.isComplited}" *ngIf="!item.isArchived">
+            <mat-card-title>{{item.title}}</mat-card-title>
+            <mat-card-subtitle>{{item.descreption}}</mat-card-subtitle>
+        </mat-card>
+    </div>
     <mat-divider></mat-divider>
-</div>
+    <!-- </div> -->
 </div>
