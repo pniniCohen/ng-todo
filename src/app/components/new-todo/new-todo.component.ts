@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-new-todo',
@@ -7,4 +7,12 @@ import { Component } from '@angular/core';
 })
 export class NewTodoComponent {
 
+@ViewChild("f") form
+
+constructor(){}
+
+public onNewTodoSubmit():void{
+  console.log("submit");
+  console.log(this.form)
+}
 }
