@@ -15,10 +15,12 @@ export class TodoComponent {
   constructor(private todoServies: TodoService) { }
 
   public onClickComplite(): void {
-    this.todo.isComplited = true;
+    this.todoServies.onTodoAction(this.todo.id,"isComplited")
+    // this.todo.isComplited = true;
   }
 
   public onClickArchive():void{
-    this.todo.isArchived=true;
+    this.todoServies.onTodoAction(this.todo.id,"isArchived")
+    // this.todo.isArchived=true;
   }
 }

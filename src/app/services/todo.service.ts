@@ -6,32 +6,49 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class TodoService {
-  private mock: ITodo[] = [
-    {"id":1,"title": "Columba palumbus", "descreption": "Dendrocygna viduata", "isComplited": false, "isArchived": false, "endDate": "10/20/2022","selected":true},
-    {"id":2,"title": "Cordylus giganteus", "descreption": "Felis wiedi or Leopardus weidi", "isComplited": false, "isArchived": false, "endDate": "6/2/2023","selected":false },
-    {"id":3,"title": "Ara ararauna", "descreption": "Dusicyon thous", "isComplited": false, "isArchived": false, "endDate": "1/24/2023" ,"selected":false},
-    {"id":4,"title": "Sula dactylatra", "descreption": "Gyps bengalensis", "isComplited": false, "isArchived": false, "endDate": "1/6/2023","selected":false },
-    {"id":5,"title":"Mellivora capensis","descreption":"Tadorna tadorna","isComplited":false,"isArchived":false,"endDate":"1/29/2023","selected":false},
-    {"id":6,"title":"Chlidonias leucopterus","descreption":"Chelodina longicollis","isComplited":false,"isArchived":false,"endDate":"11/18/2022","selected":false},
-    {"id":7,"title":"Nasua nasua","descreption":"Mazama gouazoubira","isComplited":false,"isArchived":false,"endDate":"3/21/2023","selected":false},
-    {"id":8,"title":"Tadorna tadorna","descreption":"Manouria emys","isComplited":false,"isArchived":false,"endDate":"12/29/2022","selected":false}
-  ]
+  private todos: ITodo[] = []
 
-  private _todoSubject:BehaviorSubject<Array<ITodo>> = new BehaviorSubject(this.mock);
+  private _todoSubject: BehaviorSubject<Array<ITodo>> = new BehaviorSubject(this.todos);
 
-  private singleTodoSubject:BehaviorSubject<ITodo> = new BehaviorSubject(this.mock[0]);
+  private _singleTodoSubject: BehaviorSubject<ITodo> = new BehaviorSubject(this.todos.length ? this.todos[0] : null);
 
   constructor() { }
 
-  public getTodos():Observable<Array<ITodo>>{
+  public getTodos(): Observable<Array<ITodo>> {
+    if (!this._todoSubject.value.length) {
+      const dataTodoString = localStorage.getItem('todos');
+      if (dataTodoString) {
+        const exitTodo:Array<ITodo> = JSON.parse(dataTodoString)
+        this._todoSubject.next(exitTodo);
+        exitTodo[0].selected=true;
+        this._singleTodoSubject.next(exitTodo[0]);
+      }
+    }
     return this._todoSubject.asObservable();
   }
-  public getSelectedTodo():Observable<ITodo>{
-    return this.singleTodoSubject.asObservable();
+
+  public getSelectedTodo(): Observable<ITodo> {
+    return this._singleTodoSubject.asObservable();
   }
-  public setSelectedTodo(todo:ITodo):void{
-    
-     this.singleTodoSubject.next(todo);
-     console.log(this.singleTodoSubject);
+
+  public setSelectedTodo(todo: ITodo): void {
+
+    this._singleTodoSubject.next(todo);
+    console.log(this._singleTodoSubject);
+  }
+
+  public onAddNewTodo(todo: ITodo): void {
+    const exitlistsTodo: Array<ITodo> = this._todoSubject.value;
+    exitlistsTodo.push(todo);
+    this._todoSubject.next(exitlistsTodo);
+    localStorage.setItem('todos', JSON.stringify(exitlistsTodo));
+  }
+
+  public onTodoAction(id:string , action:string):void{
+    const exitlistsTodo: Array<ITodo> = this._todoSubject.value;
+    const todoIndex=exitlistsTodo.findIndex((todo)=>todo.id==id);
+    exitlistsTodo[todoIndex][action]=true;
+    this._todoSubject.next(exitlistsTodo);
+    localStorage.setItem('todos', JSON.stringify(exitlistsTodo));
   }
 }
